@@ -1,24 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Container, CssBaseline, Button } from '@mui/material';
+import Form from './Component/Form';
+import List from './Component/List';
 
 function App() {
+  const [data, setData] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editData, setEditData] = useState(null);
+
+  const [showForm, setShowForm] = useState(true);
+
+  const handleSubmit = (formData) => {
+    if (editingIndex === null) {
+      setData([...data, formData]);
+    } else {
+      data[editingIndex] = formData;
+      setData([...data]);
+      setEditingIndex(null);
+      setEditData(null);
+    }
+
+    // After submitting the form, show the List
+    setShowForm(false);
+  };
+
+  const handleEdit = (index) => {
+    setEditingIndex(index);
+    setEditData(data[index]);
+    setShowForm(true);
+  };
+
+  const handleDelete = (index) => {
+    const newData = [...data];
+    newData.splice(index, 1);
+    setData(newData);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Container style={{ textAlign: 'center', marginTop: '20px' }}>
+      <CssBaseline />
+
+      {showForm ? (
+        <Form onSubmit={handleSubmit} editData={editData} />
+      ) : (
+        <List data={data} onEdit={handleEdit} onDelete={handleDelete} />
+      )}
+
+      {!showForm && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowForm(true)}
+          style={{ marginTop: '20px' }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          Show Form
+        </Button>
+      )}
+    </Container>
   );
 }
 
